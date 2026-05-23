@@ -11,10 +11,8 @@ const LANGUAGE_OPTIONS = ['Español', 'English'];
 
 const RegisterScreen = ({ onRegisterComplete }) => {
 
-  // ── Contexto — igual que en clase
   const { registerUser } = useContext(AppContext);
 
-  // ── Estados del formulario
   const [name, setName]         = useState('');
   const [phone, setPhone]       = useState('');
   const [email, setEmail]       = useState('');

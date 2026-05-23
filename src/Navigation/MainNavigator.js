@@ -7,11 +7,11 @@ import { Text } from 'react-native';
 import { COLORS } from '../Styles/GlobalStyles';
 
 import ProfileScreen from '../Screens/ProfileScreen';
+import RideScreen from '../Screens/RideScreen';
 //import RegisterScreen from '../Screens/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 
-//iconos por tab 
 const getTabIcon = (routeName, focused) => {
   const icons = {
     Ride:     focused ? '🚗' : '🚘',
@@ -54,6 +54,11 @@ const MainNavigator = () => {
                 name="Profile" 
                 component={ProfileScreen} 
                 options={{tabBarLabel: 'Perfil'}}
+            />
+            <Tab.Screen
+                name="Ride"
+                component={RideScreen}
+            options={{ tabBarLabel: 'Solicitar' }}
             />
         </Tab.Navigator>
     );
