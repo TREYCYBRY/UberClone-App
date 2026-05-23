@@ -106,6 +106,7 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider value={{
       isRegistered,
+      setIsRegistered,
       rides,
       transactions,
       profile,
