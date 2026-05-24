@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../Config/Firebase';
+
 // Same as CartContext in class
 export const AppContext = createContext();
 
@@ -25,7 +26,7 @@ export const AppProvider = ({ children }) => {
   // Same as [cartItems] in class
   useEffect(() => {
     if (isRegistered) {
-      //loadRides();
+      loadRides();
       //loadTransactions();
     }
   }, [ridesCount, isRegistered]);
@@ -103,6 +104,90 @@ export const AppProvider = ({ children }) => {
       return false;
     }
   };
+
+  // RIDE FUNCTIONS
+
+  // Loads user rides from Firestore
+  const loadRides = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return;
+
+      const ridesRef = collection(db, 'rides');
+      const q        = query(ridesRef, where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+
+      const ridesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sorts by descending date on the client
+      ridesData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setRides(ridesData);
+    } catch (error) {
+      console.error('loadRides error:', error);
+    }
+  };
+
+  // Saves a new ride to Firestore
+  const addRide = async (rideData) => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return false;
+
+      const now  = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toLocaleTimeString('es-CO', {
+        hour:   '2-digit',
+        minute: '2-digit',
+      });
+
+      // Simulated drivers
+      const drivers = [
+        'Carlos Pérez',
+        'Andrés Gómez',
+        'María Rodríguez',
+        'Luis Martínez',
+      ];
+      const driverName = drivers[Math.floor(Math.random() * drivers.length)];
+
+      const newRide = {
+        userId,
+        ...rideData,
+        date,
+        time,
+        driverName,
+        status:    'completed',
+        createdAt: now.toISOString(),
+      };
+
+      // Saves the ride to Firestore
+      await addDoc(collection(db, 'rides'), newRide);
+
+      // Saves the transaction to Firestore
+      await addDoc(collection(db, 'transactions'), {
+        userId,
+        description: `Ride · ${rideData.origin} → ${rideData.destination}`,
+        date: now.toLocaleDateString('es-CO', {
+          day:   'numeric',
+          month: 'long',
+          year:  'numeric',
+        }),
+        amount:    rideData.cost,
+        status:    'paid',
+        createdAt: now.toISOString(),
+      });
+
+      // Triggers list reload
+      setRidesCount((prev) => prev + 1);
+      return true;
+    } catch (error) {
+      console.error('addRide error:', error);
+      return false;
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       isRegistered,
@@ -115,9 +200,11 @@ export const AppProvider = ({ children }) => {
       saveProfile,
       registerUser,
       logout,
+      loadRides,
+      addRide,
+
     }}>
       {children}
     </AppContext.Provider>
-  )
-
-}
+  );
+};
