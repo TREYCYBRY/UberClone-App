@@ -9,7 +9,8 @@ import { COLORS } from '../Styles/GlobalStyles';
 import ProfileScreen from '../Screens/ProfileScreen';
 import RideScreen from '../Screens/RideScreen';
 import HistoryScreen from '../Screens/HistoryScreen';
-
+import PaymentScreen from '../Screens/PaymentScreen';
+import TrackingScreen from '../Screens/TrackingScreen';
 const Tab = createBottomTabNavigator();
 
 
@@ -29,7 +30,6 @@ const MainNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                // icon de tabs
                 tabBarIcon: ({ focused }) => (
                 <Text style={{ fontSize: 20 }}>
                     {getTabIcon(route.name, focused)}
@@ -57,6 +57,16 @@ const MainNavigator = () => {
                 name="Ride"
                 component={RideScreen}
                 options={{ tabBarLabel: 'Solicitar' }}
+            />
+            <Tab.Screen 
+                name="Tracking" 
+                component={TrackingScreen} 
+                options={{tabBarLabel: 'Rastreo'}}
+            />
+             <Tab.Screen
+                name="Payment"
+                component={PaymentScreen}
+                options={{ tabBarLabel: 'Pagos' }}
             />
             <Tab.Screen
                 name="History"

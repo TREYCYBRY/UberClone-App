@@ -1,12 +1,9 @@
-// src/Screens/HistoryScreen.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import {View,Text,FlatList,TouchableOpacity,StyleSheet,Modal,ScrollView,ActivityIndicator,} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppContext } from '../Context/AppContext';
 import { COLORS, globalStyles } from '../Styles/GlobalStyles';
 
-// Helpers
 const formatPrice = (amount) => `$ ${amount.toLocaleString('es-CO')}`;
 
 const formatDate = (dateString) => {
@@ -288,7 +285,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.textPrimary,
   },
-  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',

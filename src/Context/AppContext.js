@@ -1,15 +1,12 @@
-// ── Create context ─────────────────────────
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../Config/Firebase';
 
-// Same as CartContext in class
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
 
-  // ── Global states ──────────────────────
   const [isRegistered, setIsRegistered] = useState(null); // null = loading
   const [rides, setRides]               = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -22,12 +19,9 @@ export const AppProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  // Reload rides and transactions when ridesCount changes
-  // Same as [cartItems] in class
   useEffect(() => {
     if (isRegistered) {
       loadRides();
-      //loadTransactions();
     }
   }, [ridesCount, isRegistered]);
 
@@ -106,8 +100,6 @@ export const AppProvider = ({ children }) => {
   };
 
   // RIDE FUNCTIONS
-
-  // Loads user rides from Firestore
   const loadRides = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
@@ -122,7 +114,6 @@ export const AppProvider = ({ children }) => {
         ...doc.data(),
       }));
 
-      // Sorts by descending date on the client
       ridesData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setRides(ridesData);
     } catch (error) {
@@ -162,10 +153,8 @@ export const AppProvider = ({ children }) => {
         createdAt: now.toISOString(),
       };
 
-      // Saves the ride to Firestore
       await addDoc(collection(db, 'rides'), newRide);
 
-      // Saves the transaction to Firestore
       await addDoc(collection(db, 'transactions'), {
         userId,
         description: `Ride · ${rideData.origin} → ${rideData.destination}`,
@@ -179,12 +168,31 @@ export const AppProvider = ({ children }) => {
         createdAt: now.toISOString(),
       });
 
-      // Triggers list reload
       setRidesCount((prev) => prev + 1);
       return true;
     } catch (error) {
       console.error('addRide error:', error);
       return false;
+    }
+  };
+    const loadTransactions = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return;
+
+      const transRef = collection(db, 'transactions');
+      const q        = query(transRef, where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+
+      const transData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      transData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setTransactions(transData);
+    } catch (error) {
+      console.error('loadTransactions error:', error);
     }
   };
 
@@ -202,6 +210,8 @@ export const AppProvider = ({ children }) => {
       logout,
       loadRides,
       addRide,
+      transactions,
+      loadTransactions,
 
     }}>
       {children}
