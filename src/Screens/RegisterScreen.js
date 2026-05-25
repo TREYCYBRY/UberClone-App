@@ -20,17 +20,14 @@ const RegisterScreen = ({ onRegisterComplete }) => {
   const [language, setLanguage] = useState('Español');
   const [photo, setPhoto]       = useState(null);
   const [loading, setLoading]   = useState(false);
-
-  // ── Estados de errores 
+ 
   const [errors, setErrors] = useState({
     name: '', phone: '', email: '', gender: '',
   });
 
-  // Estatus UI 
   const [showGenderOptions, setShowGenderOptions]     = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
-  // Seleccionar foto
   const handlePickImage = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, (response) => {
       if (response.didCancel) return;
@@ -40,7 +37,6 @@ const RegisterScreen = ({ onRegisterComplete }) => {
     });
   };
 
-  // Validaciones
   const validate = () => {
     let valid = true;
     const newErrors = { name: '', phone: '', email: '', gender: '' };
@@ -77,8 +73,6 @@ const RegisterScreen = ({ onRegisterComplete }) => {
     return valid;
   };
 
-  // ── Register user
-  // Use registerUser context
   const handleRegister = async () => {
     if (!validate()) return;
     setLoading(true);
@@ -110,12 +104,10 @@ const RegisterScreen = ({ onRegisterComplete }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
-      {/* ── Header ── */}
       <Text style={styles.brand}>UberClone</Text>
       <Text style={globalStyles.title}>Crear cuenta</Text>
       <Text style={globalStyles.subtitle}>Completa tus datos para comenzar</Text>
 
-      {/* ── Photo of person ── */}
       <TouchableOpacity style={styles.photoContainer} onPress={handlePickImage}>
         {photo ? (
           <Image source={{ uri: photo }} style={styles.photo} />
@@ -126,7 +118,6 @@ const RegisterScreen = ({ onRegisterComplete }) => {
         )}
       </TouchableOpacity>
 
-      {/* ── last name ── */}
       <Text style={globalStyles.label}>Nombre completo</Text>
       <TextInput
         style={[globalStyles.input, errors.name ? globalStyles.inputError : null]}

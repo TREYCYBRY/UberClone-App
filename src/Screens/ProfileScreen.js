@@ -23,16 +23,13 @@ const ProfileScreen = () => {
   const [loading, setLoading]   = useState(false);
   const [saved, setSaved]       = useState(false);
 
-  // ── Estados de errores ───────────────────────
   const [errors, setErrors] = useState({
     name: '', phone: '', email: '', gender: '',
   });
 
-  // ── Estados UI
   const [showGenderOptions, setShowGenderOptions]     = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
-  // ── Carga perfil al entrar a la pantalla ─────
   useEffect(()=>{
     loadProfile()
   },[])
@@ -48,7 +45,6 @@ const ProfileScreen = () => {
       }
   },[profile]);
 
-  // ── Seleccionar foto
   const handlePickImage = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, (response) => {
       if (response.didCancel) return;
@@ -58,7 +54,6 @@ const ProfileScreen = () => {
     });
   };
 
-  // ── Validacione
   const validate = () => {
     let valid = true;
     const newErrors = { name: '', phone: '', email: '', gender: '' };
@@ -91,8 +86,7 @@ const ProfileScreen = () => {
     setErrors(newErrors);
     return valid;
   };
-
-  // ── Guardar perfil
+ // Handles saving the profile data
   const handleSave = async () => {
     if (!validate()) return;
     setLoading(true);
@@ -109,7 +103,7 @@ const ProfileScreen = () => {
     setLoading(false);
   };
 
-  // ── Cerrar sesion
+  // Logout confirmation
   const handleLogout = () => {
     Alert.alert(
       'Cerrar sesión',
@@ -128,7 +122,6 @@ const ProfileScreen = () => {
         <Text style={globalStyles.title}>Mi Perfil</Text>
         <Text style={globalStyles.subtitle}>Datos personales</Text>
 
-        {/* ── Foto de perfil ── */}
         <TouchableOpacity style={styles.photoContainer} onPress={handlePickImage}>
           {photo ? (
             <Image source={{ uri: photo }} style={styles.photo} />
@@ -139,7 +132,6 @@ const ProfileScreen = () => {
           )}
         </TouchableOpacity>
 
-        {/* ── Nombre completo ── */}
         <Text style={globalStyles.label}>Nombre completo</Text>
         <TextInput
           style={[globalStyles.input, errors.name ? globalStyles.inputError : null]}
@@ -154,7 +146,6 @@ const ProfileScreen = () => {
         />
         {errors.name ? <Text style={globalStyles.errorText}>{errors.name}</Text> : null}
 
-        {/* ── Número de celular ── */}
         <Text style={globalStyles.label}>Número de celular</Text>
         <TextInput
           style={[globalStyles.input, errors.phone ? globalStyles.inputError : null]}
@@ -170,7 +161,6 @@ const ProfileScreen = () => {
         />
         {errors.phone ? <Text style={globalStyles.errorText}>{errors.phone}</Text> : null}
 
-        {/* ── Correo electrónico ── */}
         <Text style={globalStyles.label}>Correo electrónico</Text>
         <TextInput
           style={[globalStyles.input, errors.email ? globalStyles.inputError : null]}
@@ -186,7 +176,6 @@ const ProfileScreen = () => {
         />
         {errors.email ? <Text style={globalStyles.errorText}>{errors.email}</Text> : null}
 
-        {/* ── Género ── */}
         <Text style={globalStyles.label}>Género</Text>
         <TouchableOpacity
           style={[globalStyles.input, globalStyles.dropdown, errors.gender ? globalStyles.inputError : null]}
@@ -219,7 +208,6 @@ const ProfileScreen = () => {
         )}
         {errors.gender ? <Text style={globalStyles.errorText}>{errors.gender}</Text> : null}
 
-        {/* ── Idioma ── */}
         <Text style={globalStyles.label}>Idioma</Text>
         <TouchableOpacity
           style={[globalStyles.input, globalStyles.dropdown]}
@@ -248,7 +236,6 @@ const ProfileScreen = () => {
           </View>
         )}
 
-        {/* ── Botón guardar ── */}
         <TouchableOpacity
           style={[globalStyles.button, loading && globalStyles.buttonDisabled]}
           onPress={handleSave}
@@ -259,12 +246,10 @@ const ProfileScreen = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* ── Botón cerrar sesión ── */}
         <TouchableOpacity style={globalStyles.buttonDanger} onPress={handleLogout}>
           <Text style={globalStyles.buttonDangerText}>Cerrar sesión</Text>
         </TouchableOpacity>
 
-        {/* ── Confirmación ── */}
         {saved && (
           <Text style={styles.savedText}>✅ Perfil actualizado correctamente</Text>
         )}

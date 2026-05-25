@@ -3,14 +3,16 @@
 import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
-//import { AppContext } from '../Context/AppContext';
+import { AppContext } from '../Context/AppContext';
 import { COLORS } from '../Styles/GlobalStyles';
 
 import ProfileScreen from '../Screens/ProfileScreen';
 import RideScreen from '../Screens/RideScreen';
-//import RegisterScreen from '../Screens/RegisterScreen';
-
+import HistoryScreen from '../Screens/HistoryScreen';
+import PaymentScreen from '../Screens/PaymentScreen';
+import TrackingScreen from '../Screens/TrackingScreen';
 const Tab = createBottomTabNavigator();
+
 
 const getTabIcon = (routeName, focused) => {
   const icons = {
@@ -23,10 +25,11 @@ const getTabIcon = (routeName, focused) => {
 };
 
 const MainNavigator = () => {
+    const { rides } = useContext(AppContext);
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                // icon de tabs
                 tabBarIcon: ({ focused }) => (
                 <Text style={{ fontSize: 20 }}>
                     {getTabIcon(route.name, focused)}
@@ -50,16 +53,42 @@ const MainNavigator = () => {
                 headerShown: false,
             })}
         >
+            <Tab.Screen
+                name="Ride"
+                component={RideScreen}
+                options={{ tabBarLabel: 'Solicitar' }}
+            />
+            <Tab.Screen 
+                name="Tracking" 
+                component={TrackingScreen} 
+                options={{tabBarLabel: 'Rastreo'}}
+            />
+             <Tab.Screen
+                name="Payment"
+                component={PaymentScreen}
+                options={{ tabBarLabel: 'Pagos' }}
+            />
+            <Tab.Screen
+                name="History"
+                component={HistoryScreen}
+                options={{
+                tabBarLabel: 'Historial',
+                //Badge number of rides 
+                tabBarBadge: rides.length > 0 ? rides.length : undefined,
+                tabBarBadgeStyle: {
+                    backgroundColor: COLORS.secondary,
+                    color: COLORS.surface,
+                    fontSize: 10,
+                },
+                }}
+            />
             <Tab.Screen 
                 name="Profile" 
                 component={ProfileScreen} 
                 options={{tabBarLabel: 'Perfil'}}
             />
-            <Tab.Screen
-                name="Ride"
-                component={RideScreen}
-            options={{ tabBarLabel: 'Solicitar' }}
-            />
+            
+
         </Tab.Navigator>
     );
 };

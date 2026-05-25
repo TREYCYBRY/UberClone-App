@@ -1,14 +1,12 @@
-// ── Create context ─────────────────────────
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../Config/Firebase';
-// Same as CartContext in class
+
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
 
-  // ── Global states ──────────────────────
   const [isRegistered, setIsRegistered] = useState(null); // null = loading
   const [rides, setRides]               = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -21,12 +19,9 @@ export const AppProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  // Reload rides and transactions when ridesCount changes
-  // Same as [cartItems] in class
   useEffect(() => {
     if (isRegistered) {
-      //loadRides();
-      //loadTransactions();
+      loadRides();
     }
   }, [ridesCount, isRegistered]);
 
@@ -103,6 +98,104 @@ export const AppProvider = ({ children }) => {
       return false;
     }
   };
+
+  // RIDE FUNCTIONS
+  const loadRides = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return;
+
+      const ridesRef = collection(db, 'rides');
+      const q        = query(ridesRef, where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+
+      const ridesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      ridesData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setRides(ridesData);
+    } catch (error) {
+      console.error('loadRides error:', error);
+    }
+  };
+
+  // Saves a new ride to Firestore
+  const addRide = async (rideData) => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return false;
+
+      const now  = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toLocaleTimeString('es-CO', {
+        hour:   '2-digit',
+        minute: '2-digit',
+      });
+
+      // Simulated drivers
+      const drivers = [
+        'Carlos Pérez',
+        'Andrés Gómez',
+        'María Rodríguez',
+        'Luis Martínez',
+      ];
+      const driverName = drivers[Math.floor(Math.random() * drivers.length)];
+
+      const newRide = {
+        userId,
+        ...rideData,
+        date,
+        time,
+        driverName,
+        status:    'completed',
+        createdAt: now.toISOString(),
+      };
+
+      await addDoc(collection(db, 'rides'), newRide);
+
+      await addDoc(collection(db, 'transactions'), {
+        userId,
+        description: `Ride · ${rideData.origin} → ${rideData.destination}`,
+        date: now.toLocaleDateString('es-CO', {
+          day:   'numeric',
+          month: 'long',
+          year:  'numeric',
+        }),
+        amount:    rideData.cost,
+        status:    'paid',
+        createdAt: now.toISOString(),
+      });
+
+      setRidesCount((prev) => prev + 1);
+      return true;
+    } catch (error) {
+      console.error('addRide error:', error);
+      return false;
+    }
+  };
+    const loadTransactions = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) return;
+
+      const transRef = collection(db, 'transactions');
+      const q        = query(transRef, where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+
+      const transData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      transData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setTransactions(transData);
+    } catch (error) {
+      console.error('loadTransactions error:', error);
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       isRegistered,
@@ -115,9 +208,13 @@ export const AppProvider = ({ children }) => {
       saveProfile,
       registerUser,
       logout,
+      loadRides,
+      addRide,
+      transactions,
+      loadTransactions,
+
     }}>
       {children}
     </AppContext.Provider>
-  )
-
-}
+  );
+};
