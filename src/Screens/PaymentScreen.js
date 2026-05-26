@@ -173,21 +173,88 @@ const PaymentScreen = ({ route, navigation }) => {
 
 // Component Styles
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 20 },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40 },
-  emptyIcon: { fontSize: 60, marginBottom: 15 },
-  emptyText: { fontSize: 18, color: COLORS.textSecondary, textAlign: 'center' },
-  sectionTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, marginBottom: 12, marginTop: 20, textTransform: 'uppercase' },
-  methodCard: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, padding: 16, marginBottom: 10, backgroundColor: COLORS.surface },
-  methodCardSelected: { borderColor: COLORS.primary, borderWidth: 2 },
-  methodIcon: { fontSize: 24, marginRight: 14 },
-  methodInfo: { flex: 1 },
-  methodLabel: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
-  radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
-  radioCircleSelected: { borderColor: COLORS.primary },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.primary },
-  payButton: { height: 52, backgroundColor: COLORS.primary, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginTop: 20 },
-  payButtonText: { fontSize: 16, fontWeight: 'bold', color: COLORS.surface },
+  container: { 
+    flex: 1, 
+    paddingHorizontal: 24, 
+    paddingTop: 20,
+    backgroundColor: COLORS.background,
+  },
+  emptyContainer: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    paddingHorizontal: 40 
+  },
+  emptyIcon: { 
+    fontSize: 60, 
+    marginBottom: 15 
+  },
+  emptyText: { 
+    fontSize: 18, 
+    color: COLORS.textSecondary, 
+    textAlign: 'center' 
+  },
+  sectionTitle: { 
+    fontSize: 14, 
+    fontWeight: '600', 
+    color: COLORS.textSecondary, 
+    marginBottom: 12, marginTop: 20, 
+    textTransform: 'uppercase' 
+  },
+  methodCard: { flexDirection: 'row', 
+    alignItems: 'center', 
+    borderWidth: 1, 
+    borderColor: COLORS.border, 
+    borderRadius: 8, padding: 16, 
+    marginBottom: 10, 
+    backgroundColor: COLORS.surface 
+  },
+  methodCardSelected: { 
+    borderColor: COLORS.primary, 
+    borderWidth: 2 
+  },
+  methodIcon: { 
+    fontSize: 24, 
+    marginRight: 14 
+  },
+  methodInfo: { 
+    flex: 1 
+  },
+  methodLabel: { 
+    fontSize: 15, 
+    fontWeight: '600', 
+    color: COLORS.textPrimary 
+  },
+  radioCircle: { 
+    width: 20, 
+    height: 20, 
+    borderRadius: 10, 
+    borderWidth: 2, 
+    borderColor: COLORS.border, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  radioCircleSelected: { 
+    borderColor: COLORS.primary 
+  },
+  radioDot: { width: 10, 
+    height: 10, 
+    borderRadius: 5, 
+    backgroundColor: COLORS.primary 
+  },
+  payButton: { 
+    height: 52, 
+    backgroundColor: COLORS.primary, 
+    borderRadius: 8, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginTop: 20 
+  },
+  payButtonText: { 
+    fontSize: 16, 
+    fontWeight: 'bold', 
+    color: COLORS.surface 
+  },
 });
 
 export default PaymentScreen;

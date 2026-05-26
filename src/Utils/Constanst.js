@@ -1,5 +1,3 @@
-// src/Utils/constants.js
-
 export const GOOGLE_API_KEY = 'AIzaSyCbnYvHHL9_7NclAqAmYRngFfGJXbAyBUU';
 
 export const FIREBASE_COLLECTIONS = {
