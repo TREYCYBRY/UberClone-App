@@ -1,8 +1,9 @@
 // src/Screens/ProfileScreen.js
-import React, { useState, useEffect, useContext } from 'react';
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,ScrollView,Image,Alert} from 'react-native';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../Context/AppContext';
 import { COLORS, globalStyles } from '../Styles/GlobalStyles';
 
@@ -10,8 +11,6 @@ const GENDER_OPTIONS = ['Masculino', 'Femenino', 'Prefiero no decir'];
 const LANGUAGE_OPTIONS = ['Español', 'English'];
 
 const ProfileScreen = () => {
-
-
   const { logout, loadProfile, saveProfile, profile } = useContext(AppContext);
 
   const [name, setName]         = useState('');
@@ -32,21 +31,28 @@ const ProfileScreen = () => {
   const [showGenderOptions, setShowGenderOptions]     = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
-  // Load profile when entering the screen
-  useEffect(()=>{
-    loadProfile()
-  },[])
-
+  // Load profile when entering the screen initially
   useEffect(() => {
-    if (profile) {
-        setName(profile.name       || '');
-        setPhone(profile.phone     || '');
-        setEmail(profile.email     || '');
-        setGender(profile.gender   || '');
+    loadProfile();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (profile) {
+        setName(profile.name || '');
+        setPhone(profile.phone || '');
+        setEmail(profile.email || '');
+        setGender(profile.gender || '');
         setLanguage(profile.language || 'Español');
-        setPhoto(profile.photo     || null);
+        setPhoto(profile.photo || null);
       }
-  },[profile]);
+      
+      setErrors({ name: '', phone: '', email: '', gender: '' });
+      setSaved(false);
+      setShowGenderOptions(false);
+      setShowLanguageOptions(false);
+    }, [profile])
+  );
 
   // Select photo
   const handlePickImage = () => {
@@ -95,6 +101,20 @@ const ProfileScreen = () => {
   // Save profile
   const handleSave = async () => {
     if (!validate()) return;
+
+    const hasChanges = 
+      name !== (profile?.name || '') ||
+      phone !== (profile?.phone || '') ||
+      email !== (profile?.email || '') ||
+      gender !== (profile?.gender || '') ||
+      language !== (profile?.language || 'Español') ||
+      photo !== (profile?.photo || null);
+
+    if (!hasChanges) {
+      Alert.alert('Sin cambios', 'No has modificado ningún dato de tu perfil.');
+      return;
+    }
+
     setLoading(true);
 
     const success = await saveProfile({ name, phone, email, gender, language, photo });
@@ -102,6 +122,11 @@ const ProfileScreen = () => {
     if (success) {
       setSaved(true);
       Alert.alert('¡Listo!', 'Tu perfil fue actualizado correctamente.');
+      
+      setTimeout(() => {
+        setSaved(false);
+      }, 3000);
+      
     } else {
       Alert.alert('Error', 'No se pudo actualizar tu perfil.');
     }
