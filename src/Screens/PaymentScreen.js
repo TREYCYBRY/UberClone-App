@@ -6,9 +6,9 @@ import { useStripe } from '@stripe/stripe-react-native';
 import { AppContext } from '../Context/AppContext';
 import { COLORS, globalStyles } from '../Styles/GlobalStyles';
 
-// adler configure
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../Config/Firebase';
+// Direct HTTPS call to the deployed Firebase Callable Function.
+const CREATE_PAYMENT_INTENT_URL =
+  'https://us-central1-uberclone-8df93.cloudfunctions.net/createPaymentIntent';
 
 // Available payment options
 const PAYMENT_METHODS = [
@@ -68,19 +68,32 @@ const PaymentScreen = ({ route, navigation }) => {
     try {
       setLoading(true);
 
-      // Call Firebase Function with Web SDK
-      const createPaymentIntent = httpsCallable(
-        functions,
-        'createPaymentIntent',
-      );
-      const { data } = await createPaymentIntent({
-        amount: parseInt(rideData.cost),
+      // Call the deployed Callable Function via plain HTTPS (iOS + Android compatible)
+      const response = await fetch(CREATE_PAYMENT_INTENT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { amount: parseInt(rideData.cost) } }),
       });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('createPaymentIntent HTTP error:', response.status, errText);
+        Alert.alert('Error', 'No se pudo crear el cobro en el servidor.');
+        return;
+      }
+
+      const json = await response.json();
+      const clientSecret = json?.result?.clientSecret;
+
+      if (!clientSecret) {
+        Alert.alert('Error', 'Respuesta inválida del servidor de pagos.');
+        return;
+      }
 
       // Initialize the Stripe Payment Sheet
       const { error: initError } = await initPaymentSheet({
         merchantDisplayName:      'UberClone App',
-        paymentIntentClientSecret: data.clientSecret,
+        paymentIntentClientSecret: clientSecret,
       });
 
       if (initError) {
