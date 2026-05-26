@@ -1,5 +1,3 @@
-// src/Styles/theme.js
-
 const theme = {
   colors: {
     // Colores principales — estilo Uber (oscuro y limpio)

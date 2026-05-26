@@ -1,97 +1,136 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# UberClone App 🚗
 
-# Getting Started
+**Student 1:** Adler Clin Omonte Sanchez
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+**Student 2:** Treycy Bridney Andres Sebastian
 
-## Step 1: Start Metro
+## 📝 Project Description
+UberClone is a mobile application developed in **React Native** that replicates the core ride-hailing experience of Uber. Users can register or log in, request a ride by selecting an origin and destination on an interactive map, choose a vehicle type, see the estimated fare, complete the payment with a credit card through **Stripe** or in cash, track the ride in real time, and review their full ride history.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+The project integrates **Firebase Cloud Functions** as a secure backend for creating Stripe Payment Intents, **Firestore** for persistent data, and the **Google Maps SDK** for live geolocation and route rendering.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## ✨ Main Features
+* **Authentication:** Registration and login flow with persistent session.
+* **Interactive map:** Origin and destination selection with autocomplete (Google Places).
+* **Vehicle selection:** Multiple vehicle types with dynamic fare calculation based on distance and duration.
+* **Payments with Stripe:** Native Payment Sheet for credit/debit cards, with the option to pay in cash.
+* **Real-time tracking:** Ride status visualization with route polylines.
+* **Ride history:** Persistent log of all completed trips.
+* **User profile:** Manage personal information.
 
-```sh
-# Using npm
-npm start
+## 💻 Technologies Used
+* **Framework:** React Native CLI 0.85 (Functional Components with Hooks)
+* **Navigation:** React Navigation (Native Stack + Bottom Tabs)
+* **State Management:** React Context API + Hooks
+* **Maps & Geolocation:** `react-native-maps` (Google Maps SDK) + `react-native-google-places-autocomplete`
+* **Backend:** Firebase (Firestore + Cloud Functions v2 in Node.js 24)
+* **Payments:** `@stripe/stripe-react-native` (Payment Sheet) + Stripe Node SDK on the server
+* **Persistent Storage:** `@react-native-async-storage/async-storage`
+* **User Interface:** React Native Safe Area Context, Vector Icons, Gesture Handler, Reanimated
+* **Testing Platforms:** iOS Simulator (iPhone 17), Android Emulator, and physical devices
 
-# OR using Yarn
-yarn start
+## 📂 Project Structure
+```
+UberClone-App/
+├── App.js                      # Entry point (StripeProvider + AppProvider)
+├── src/
+│   ├── Config/Firebase.js      # Firebase Web SDK initialization
+│   ├── Context/AppContext.js   # Global state (session, rides)
+│   ├── Navigation/             # Stack + Tabs navigators
+│   ├── Screens/                # Login, Register, Ride, Payment, Tracking, History, Profile
+│   ├── Styles/GlobalStyles.js  # Color palette and shared styles
+│   └── Utils/                  # Constants, vehicle types, mocks, storage helpers
+├── functions/                  # Firebase Cloud Functions (createPaymentIntent)
+├── ios/                        # Native iOS project (Xcode workspace + Pods)
+└── android/                    # Native Android project (Gradle)
 ```
 
-## Step 2: Build and run your app
+## 🛠️ Installation and Setup Instructions
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+Follow these steps in your terminal to clone and run the project locally:
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+### 1. Clone the repository and navigate to the folder
+```bash
+git clone https://github.com/adlerOmonte1/UberClone-App.git
+cd UberClone-App
 ```
 
-### iOS
+### 2. Install JavaScript dependencies
+```bash
+npm install
+```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+This installs every dependency declared in `package.json`, including React Navigation, React Native Maps, Stripe, Firebase, and all supporting libraries.
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+### 3. iOS Configuration (Mandatory on Mac)
+Install the CocoaPods native dependencies (required after each `npm install` or update of native modules):
+```bash
+cd ios
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+> If you do not have CocoaPods set up, run `sudo gem install cocoapods` first.
 
-```sh
-# Using npm
-npm run ios
+### 4. Android Configuration
+No extra steps are required for the JavaScript layer. Make sure you have:
+* **Android Studio** with an Android 13+ emulator created, OR a physical device with **USB debugging** enabled.
+* The `ANDROID_HOME` environment variable correctly configured.
 
-# OR using Yarn
-yarn ios
+### 5. Run the application
+
+**Start Metro (in one terminal):**
+```bash
+npm start
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+**Start the project on the iPhone simulator (iOS) in another terminal:**
+```bash
+npx react-native run-ios --simulator="iPhone 17"
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+**Start the project on the Android emulator:**
+```bash
+npx react-native run-android
+```
 
-## Step 3: Modify your app
+### 6. Run on a physical device (optional)
 
-Now that you have successfully run the app, let's make changes!
+**iOS (physical iPhone):**
+1. Connect the iPhone to the Mac via USB and trust the computer.
+2. Open `ios/UberClone.xcworkspace` in Xcode.
+3. In **Signing & Capabilities**, select your Apple ID team and use a unique Bundle Identifier (e.g. `com.yourname.uberclone`).
+4. Select your iPhone as the destination and press **Run** (▶️).
+5. On the iPhone, trust the developer certificate under **Settings → General → VPN & Device Management**.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+**Android (physical phone):**
+1. Enable **Developer Options** and **USB Debugging** on the phone.
+2. Connect it via USB and accept the debug authorization.
+3. Run `npx react-native run-android` — the app installs automatically.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🔐 Required Credentials
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+The project relies on three external services. The keys included in the repository are **test keys** for academic use:
 
-## Congratulations! :tada:
+* **Firebase:** Configuration already injected in `src/Config/Firebase.js`.
+* **Stripe (publishable key):** Defined inside `<StripeProvider>` in `App.js`.
+* **Stripe (secret key):** Stored on the server in `functions/.env` (`STRIPE_SECRET_KEY`).
+* **Google Maps API Key:** Configured in `android/app/src/main/AndroidManifest.xml` and in the iOS `AppDelegate`.
 
-You've successfully run and modified your React Native App. :partying_face:
+## 💳 Testing the Stripe Payment Flow
+Use Stripe's official test cards in the Payment Sheet:
 
-### Now what?
+| Card Number          | Result                  |
+|----------------------|-------------------------|
+| `4242 4242 4242 4242`| Successful payment      |
+| `4000 0000 0000 9995`| Insufficient funds      |
+| `4000 0025 0000 3155`| Requires 3D Secure auth |
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Use any future expiration date, any 3-digit CVC, and any 5-digit ZIP code.
 
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🧪 Tested Platforms
+* ✅ iOS Simulator — iPhone 17 (iOS 18+)
+* ✅ Android Emulator — Pixel 6 (API 34)
+* ✅ Physical iPhone via Xcode
+* ✅ Physical Android via USB debugging
