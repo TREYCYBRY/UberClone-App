@@ -6,8 +6,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { COLORS, globalStyles } from '../Styles/GlobalStyles';
 import { GOOGLE_API_KEY } from '../Utils/Constanst';
 
-// Importamos los vehículos
-import vehicleTypes from '../Utils/vehicleTypes';
+// import vehicle types
+import vehicleTypes from '../Utils/VehicleTypes';
 
 const formatPrice = (amount) => `$ ${amount.toLocaleString('es-CO')}`;
 
@@ -37,10 +37,9 @@ const RideScreen = ({ navigation }) => {
   const originRef = useRef(null);
   const destRef = useRef(null);
 
-  // 🔥 SOLUCIÓN DEFINITIVA: Limpieza forzada de ABSOLUTAMENTE TODO al entrar a la pantalla
+  // Force clean of absolutely everything when entering the screen
   useFocusEffect(
     useCallback(() => {
-      // 1. Borramos la memoria de las variables (esto elimina la línea y los marcadores)
       setOrigin(null);
       setDestination(null);
       setSelectedVehicle(null);
@@ -49,25 +48,24 @@ const RideScreen = ({ navigation }) => {
       setDuration(null);
       setFare(null);
       
-      // 2. Borramos el texto visual de las cajas de Google
+      // Clean the visual text of the Google boxes
       if (originRef.current) originRef.current.setAddressText('');
       if (destRef.current) destRef.current.setAddressText('');
 
-      // 3. Regresamos la cámara a la posición inicial
       if (mapRef.current) {
         mapRef.current.animateToRegion(INITIAL_REGION, 800);
       }
     }, [])
   );
 
-  // Calcular ruta cuando tengamos ambos puntos
+  // Calculate route when we have both points
   useEffect(() => {
     if (origin && destination) {
       fetchRoute();
     }
   }, [origin, destination]);
 
-  // Calcular tarifa cuando tengamos ruta y vehículo
+  // Calculate fare when we have route and vehicle
   useEffect(() => {
     if (selectedVehicle && distance) {
       setFare(calculateFare(distance, selectedVehicle));
@@ -103,7 +101,7 @@ const RideScreen = ({ navigation }) => {
           'Ruta no encontrada', 
           'No pudimos trazar una ruta en auto entre estos dos puntos. Intenta usar una dirección más específica.'
         );
-        // Si hay error, limpiamos solo la ruta
+        // If there is an error, clean only the route
         setRouteCoords([]);
         setDistance(null);
         setDuration(null);
@@ -165,7 +163,6 @@ const RideScreen = ({ navigation }) => {
       time:        new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Navegamos a la pantalla de pago sin forzar borrados (useFocusEffect se encarga al regresar)
     navigation.navigate('Payment', { rideData: pendingRide });
   };
 
@@ -176,7 +173,6 @@ const RideScreen = ({ navigation }) => {
           {origin && <Marker coordinate={origin} title="Origen" pinColor={COLORS.primary} />}
           {destination && <Marker coordinate={destination} title="Destino" pinColor={COLORS.secondary} />}
           
-          {/* 🔥 Agregamos un key para obligar a Android a destruir la línea si routeCoords está vacío */}
           {routeCoords.length > 0 && (
             <Polyline 
               key={`poly-${routeCoords.length}`} 
@@ -197,7 +193,7 @@ const RideScreen = ({ navigation }) => {
           keyboardShouldPersistTaps="always" 
           showsVerticalScrollIndicator={false}
         >
-          {/* ORIGEN */}
+          {/* origin */}
           <View style={{ marginBottom: 15, zIndex: 10 }}>
             <Text style={globalStyles.label}>Origen</Text>
             <GooglePlacesAutocomplete
@@ -230,7 +226,7 @@ const RideScreen = ({ navigation }) => {
             />
           </View>
 
-          {/* DESTINO */}
+          {/* destination */}
           <View style={{ marginBottom: 15, zIndex: 9 }}>
             <Text style={globalStyles.label}>Destino</Text>
             <GooglePlacesAutocomplete

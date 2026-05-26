@@ -11,18 +11,20 @@ const LANGUAGE_OPTIONS = ['Español', 'English'];
 
 const RegisterScreen = ({ onRegisterComplete }) => {
 
-  const { registerUser } = useContext(AppContext);
+  const { registerUser, setAuthMode } = useContext(AppContext);
 
-  const [name, setName]         = useState('');
-  const [phone, setPhone]       = useState('');
-  const [email, setEmail]       = useState('');
-  const [gender, setGender]     = useState('');
-  const [language, setLanguage] = useState('Español');
-  const [photo, setPhoto]       = useState(null);
-  const [loading, setLoading]   = useState(false);
- 
+  const [name, setName]                       = useState('');
+  const [phone, setPhone]                     = useState('');
+  const [email, setEmail]                     = useState('');
+  const [password, setPassword]               = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [gender, setGender]                   = useState('');
+  const [language, setLanguage]               = useState('Español');
+  const [photo, setPhoto]                     = useState(null);
+  const [loading, setLoading]                 = useState(false);
+
   const [errors, setErrors] = useState({
-    name: '', phone: '', email: '', gender: '',
+    name: '', phone: '', email: '', password: '', confirmPassword: '', gender: '',
   });
 
   const [showGenderOptions, setShowGenderOptions]     = useState(false);
@@ -39,7 +41,7 @@ const RegisterScreen = ({ onRegisterComplete }) => {
 
   const validate = () => {
     let valid = true;
-    const newErrors = { name: '', phone: '', email: '', gender: '' };
+    const newErrors = { name: '', phone: '', email: '', password: '', confirmPassword: '', gender: '' };
 
     if (!name.trim()) {
       newErrors.name = 'El nombre es obligatorio';
@@ -64,6 +66,19 @@ const RegisterScreen = ({ onRegisterComplete }) => {
       valid = false;
     }
 
+    if (!password) {
+      newErrors.password = 'La contraseña es obligatoria';
+      valid = false;
+    } else if (password.length < 6) {
+      newErrors.password = 'Debe tener al menos 6 caracteres';
+      valid = false;
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
+      valid = false;
+    }
+
     if (!gender) {
       newErrors.gender = 'Selecciona un género';
       valid = false;
@@ -80,7 +95,8 @@ const RegisterScreen = ({ onRegisterComplete }) => {
     const success = await registerUser({
       name,
       phone,
-      email,
+      email: email.trim(),
+      password,
       gender,
       language,
       photo:     photo || null,
@@ -164,6 +180,38 @@ const RegisterScreen = ({ onRegisterComplete }) => {
       />
       {errors.email ? <Text style={globalStyles.errorText}>{errors.email}</Text> : null}
 
+      {/* Password */}
+      <Text style={globalStyles.label}>Contraseña</Text>
+      <TextInput
+        style={[globalStyles.input, errors.password ? globalStyles.inputError : null]}
+        placeholder="Mínimo 6 caracteres"
+        placeholderTextColor={COLORS.textSecondary}
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+          setErrors((prev) => ({ ...prev, password: '' }));
+        }}
+        secureTextEntry
+        autoCapitalize="none"
+      />
+      {errors.password ? <Text style={globalStyles.errorText}>{errors.password}</Text> : null}
+
+      {/* Confirm Password */}
+      <Text style={globalStyles.label}>Confirmar contraseña</Text>
+      <TextInput
+        style={[globalStyles.input, errors.confirmPassword ? globalStyles.inputError : null]}
+        placeholder="Repite tu contraseña"
+        placeholderTextColor={COLORS.textSecondary}
+        value={confirmPassword}
+        onChangeText={(text) => {
+          setConfirmPassword(text);
+          setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+        }}
+        secureTextEntry
+        autoCapitalize="none"
+      />
+      {errors.confirmPassword ? <Text style={globalStyles.errorText}>{errors.confirmPassword}</Text> : null}
+
       {/* Gender */}
       <Text style={globalStyles.label}>Género</Text>
       <TouchableOpacity
@@ -241,6 +289,12 @@ const RegisterScreen = ({ onRegisterComplete }) => {
         Al continuar aceptas los términos y la política de privacidad de UberClone.
       </Text>
 
+      <TouchableOpacity style={styles.linkContainer} onPress={() => setAuthMode('login')}>
+        <Text style={styles.linkText}>
+          ¿Ya tienes cuenta? <Text style={styles.linkBold}>Inicia sesión</Text>
+        </Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 };
@@ -288,6 +342,18 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 18,
+  },
+  linkContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+  },
+  linkBold: {
+    color: COLORS.primary,
+    fontWeight: 'bold',
   },
 });
 

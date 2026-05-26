@@ -23,13 +23,16 @@ const ProfileScreen = () => {
   const [loading, setLoading]   = useState(false);
   const [saved, setSaved]       = useState(false);
 
+  // States of errors
   const [errors, setErrors] = useState({
     name: '', phone: '', email: '', gender: '',
   });
 
+  // States of UI
   const [showGenderOptions, setShowGenderOptions]     = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
+  // Load profile when entering the screen
   useEffect(()=>{
     loadProfile()
   },[])
@@ -45,6 +48,7 @@ const ProfileScreen = () => {
       }
   },[profile]);
 
+  // Select photo
   const handlePickImage = () => {
     launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, (response) => {
       if (response.didCancel) return;
@@ -54,6 +58,7 @@ const ProfileScreen = () => {
     });
   };
 
+  // Validations
   const validate = () => {
     let valid = true;
     const newErrors = { name: '', phone: '', email: '', gender: '' };
@@ -86,7 +91,8 @@ const ProfileScreen = () => {
     setErrors(newErrors);
     return valid;
   };
- // Handles saving the profile data
+
+  // Save profile
   const handleSave = async () => {
     if (!validate()) return;
     setLoading(true);
@@ -103,7 +109,7 @@ const ProfileScreen = () => {
     setLoading(false);
   };
 
-  // Logout confirmation
+  // Log out
   const handleLogout = () => {
     Alert.alert(
       'Cerrar sesión',
@@ -122,6 +128,7 @@ const ProfileScreen = () => {
         <Text style={globalStyles.title}>Mi Perfil</Text>
         <Text style={globalStyles.subtitle}>Datos personales</Text>
 
+        {/* Profile photo */}
         <TouchableOpacity style={styles.photoContainer} onPress={handlePickImage}>
           {photo ? (
             <Image source={{ uri: photo }} style={styles.photo} />
@@ -132,6 +139,7 @@ const ProfileScreen = () => {
           )}
         </TouchableOpacity>
 
+        {/* Full name */}
         <Text style={globalStyles.label}>Nombre completo</Text>
         <TextInput
           style={[globalStyles.input, errors.name ? globalStyles.inputError : null]}
@@ -146,6 +154,7 @@ const ProfileScreen = () => {
         />
         {errors.name ? <Text style={globalStyles.errorText}>{errors.name}</Text> : null}
 
+        {/* Phone number */}
         <Text style={globalStyles.label}>Número de celular</Text>
         <TextInput
           style={[globalStyles.input, errors.phone ? globalStyles.inputError : null]}
@@ -161,6 +170,7 @@ const ProfileScreen = () => {
         />
         {errors.phone ? <Text style={globalStyles.errorText}>{errors.phone}</Text> : null}
 
+        {/* Email */}
         <Text style={globalStyles.label}>Correo electrónico</Text>
         <TextInput
           style={[globalStyles.input, errors.email ? globalStyles.inputError : null]}
@@ -176,6 +186,7 @@ const ProfileScreen = () => {
         />
         {errors.email ? <Text style={globalStyles.errorText}>{errors.email}</Text> : null}
 
+        {/* Gender */}
         <Text style={globalStyles.label}>Género</Text>
         <TouchableOpacity
           style={[globalStyles.input, globalStyles.dropdown, errors.gender ? globalStyles.inputError : null]}
@@ -208,6 +219,7 @@ const ProfileScreen = () => {
         )}
         {errors.gender ? <Text style={globalStyles.errorText}>{errors.gender}</Text> : null}
 
+        {/* Language */}
         <Text style={globalStyles.label}>Idioma</Text>
         <TouchableOpacity
           style={[globalStyles.input, globalStyles.dropdown]}
@@ -236,6 +248,7 @@ const ProfileScreen = () => {
           </View>
         )}
 
+        {/* Save button */}
         <TouchableOpacity
           style={[globalStyles.button, loading && globalStyles.buttonDisabled]}
           onPress={handleSave}
@@ -246,10 +259,12 @@ const ProfileScreen = () => {
           </Text>
         </TouchableOpacity>
 
+        {/* Log out button */}
         <TouchableOpacity style={globalStyles.buttonDanger} onPress={handleLogout}>
           <Text style={globalStyles.buttonDangerText}>Cerrar sesión</Text>
         </TouchableOpacity>
 
+        {/* Confirmation */}
         {saved && (
           <Text style={styles.savedText}>✅ Perfil actualizado correctamente</Text>
         )}

@@ -8,6 +8,7 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
 
   const [isRegistered, setIsRegistered] = useState(null); // null = loading
+  const [authMode, setAuthMode]         = useState('login'); // 'login' | 'register'
   const [rides, setRides]               = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [profile, setProfile]           = useState(null);
@@ -25,8 +26,7 @@ export const AppProvider = ({ children }) => {
     }
   }, [ridesCount, isRegistered]);
 
-  // AUTHENTICATION FUNCTIONS
-
+  // Authentication functions
   // Checks if the user is already registered
   const checkUser = async () => {
     try {
@@ -38,10 +38,11 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Log out — clears local userId
+  // Log out, clears local userId and sends user to login screen
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('userId');
+      setAuthMode('login');
       setIsRegistered(false);
       setProfile(null);
       setRides([]);
@@ -51,8 +52,34 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // PROFILE FUNCTIONS
+  // Logs in an existing user by email and password
+  const loginUser = async (email, password) => {
+    try {
+      const usersRef = collection(db, 'users');
+      const q        = query(usersRef, where('email', '==', email.trim()));
+      const snapshot = await getDocs(q);
 
+      if (snapshot.empty) {
+        return { success: false, message: 'No existe una cuenta con este correo.' };
+      }
+
+      const userDoc  = snapshot.docs[0];
+      const userData = userDoc.data();
+
+      if (userData.password !== password) {
+        return { success: false, message: 'La contraseña es incorrecta.' };
+      }
+
+      await AsyncStorage.setItem('userId', userDoc.id);
+      setIsRegistered(true);
+      return { success: true };
+    } catch (error) {
+      console.error('loginUser error:', error);
+      return { success: false, message: 'Hubo un problema al iniciar sesión.' };
+    }
+  };
+
+  // Profile functions
   // Loads user profile from Firestore
   const loadProfile = async () => {
     try {
@@ -99,7 +126,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // RIDE FUNCTIONS
+  // Ride functions
   const loadRides = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
@@ -200,6 +227,8 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider value={{
       isRegistered,
       setIsRegistered,
+      authMode,
+      setAuthMode,
       rides,
       transactions,
       profile,
@@ -207,10 +236,10 @@ export const AppProvider = ({ children }) => {
       loadProfile,
       saveProfile,
       registerUser,
+      loginUser,
       logout,
       loadRides,
       addRide,
-      transactions,
       loadTransactions,
 
     }}>

@@ -2,16 +2,17 @@
 import React, { useContext } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-// 1. IMPORTA EL PROVEEDOR DE STRIPE
+// import providers Stripe
 import { StripeProvider } from '@stripe/stripe-react-native'; 
 
 import MainNavigator from './src/Navigation/MainNavigator';
 import RegisterScreen from './src/Screens/RegisterScreen';
+import LoginScreen from './src/Screens/LoginScreen';
 import { AppContext, AppProvider } from './src/Context/AppContext';
 import { COLORS } from './src/Styles/GlobalStyles';
 
 const AppContent = () => {
-  const { isRegistered, setIsRegistered } = useContext(AppContext);
+  const { isRegistered, setIsRegistered, authMode } = useContext(AppContext);
 
   if (isRegistered === null) {
     return (
@@ -22,7 +23,10 @@ const AppContent = () => {
   }
 
   if (!isRegistered) {
-    return <RegisterScreen onRegisterComplete={() => setIsRegistered(true)} />;
+    if (authMode === 'register') {
+      return <RegisterScreen onRegisterComplete={() => setIsRegistered(true)} />;
+    }
+    return <LoginScreen onLoginComplete={() => setIsRegistered(true)} />;
   }
 
   return (
@@ -35,7 +39,6 @@ const AppContent = () => {
 const App = () => {
   return (
     <AppProvider>
-      {/* 2. ENVUELVE TU APP Y PON TU LLAVE PÚBLICA (empieza con pk_test_) */}
       <StripeProvider publishableKey="pk_test_51TaoVWEiU6sFCYbxR7V0SAa1s4kDMkEMSnTynRYCuk0LZlGUmv73bJHGQJWrhngJ36st4QPWExi6MlIyiPtFmXYX00tGPnqbgk">
         <AppContent />
       </StripeProvider>

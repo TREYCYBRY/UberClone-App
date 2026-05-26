@@ -2,9 +2,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStripe } from '@stripe/stripe-react-native'; 
-import functions from '@react-native-firebase/functions';
+//  import functions from '@react-native-firebase/functions';
 import { AppContext } from '../Context/AppContext';
 import { COLORS, globalStyles } from '../Styles/GlobalStyles';
+
+// adler configure
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../Config/Firebase';
 
 // Available payment options
 const PAYMENT_METHODS = [
@@ -27,7 +31,7 @@ const PaymentScreen = ({ route, navigation }) => {
   // Get ride data passed from the previous screen
   const rideData = route?.params?.rideData;
 
-  // 🔥 NUEVO: Cancela y borra el cobro si el usuario abandona esta ventana sin pagar
+  // Cancel and delete the charge if the user leaves this window without paying
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       navigation.setParams({ rideData: null });
@@ -58,19 +62,24 @@ const PaymentScreen = ({ route, navigation }) => {
     // Navigate to the tracking screen
     navigation.navigate('Tracking', { activeRide: rideData });
   };
-
-  // Handles the Stripe payment process
+//////////////////////////////////////// evaluate stripe in ios 
+  // Payment process with Stripe
   const processStripePayment = async () => {
     try {
       setLoading(true);
-      const amountInCents = parseInt(rideData.cost) * 100;
-      
-      // 1. Call Firebase function to create a PaymentIntent
-      const { data } = await functions().httpsCallable('createPaymentIntent')({ amount: amountInCents });
-      
-      // 2. Initialize the Stripe Payment Sheet with the secret key
+
+      // Call Firebase Function with Web SDK
+      const createPaymentIntent = httpsCallable(
+        functions,
+        'createPaymentIntent',
+      );
+      const { data } = await createPaymentIntent({
+        amount: parseInt(rideData.cost),
+      });
+
+      // Initialize the Stripe Payment Sheet
       const { error: initError } = await initPaymentSheet({
-        merchantDisplayName: 'UberClone App',
+        merchantDisplayName:      'UberClone App',
         paymentIntentClientSecret: data.clientSecret,
       });
 
@@ -79,22 +88,26 @@ const PaymentScreen = ({ route, navigation }) => {
         return;
       }
 
-      // 3. Present the Payment Sheet to the user
+      // Show the Payment Sheet to the user
       const { error: presentError } = await presentPaymentSheet();
 
       if (presentError) {
-        Alert.alert('Aviso', `Pago cancelado.`);
+        Alert.alert('Aviso', 'Pago cancelado.');
       } else {
-        Alert.alert('¡Éxito!', `Pago de ${formatPrice(rideData.cost)} processed successfully.`);
+        Alert.alert(
+          '¡Éxito!',
+          `Pago de ${formatPrice(rideData.cost)} procesado correctamente.`,
+        );
         await handlePaymentSuccess();
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('processStripePayment error:', error);
       Alert.alert('Error', 'Hubo un problema conectando con Stripe.');
     } finally {
       setLoading(false);
     }
   };
+  ////////////////////////////////////////
 
   // Triggered when the user presses the main pay button
   const handleConfirmPayment = () => {
