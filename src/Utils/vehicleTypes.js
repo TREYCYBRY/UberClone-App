@@ -1,3 +1,5 @@
+// src/Utils/vehicleTypes.js
+
 const vehicleTypes = [
     {
       id: 'economy',
