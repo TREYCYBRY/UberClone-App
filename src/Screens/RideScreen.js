@@ -7,7 +7,7 @@ import { COLORS, globalStyles } from '../Styles/GlobalStyles';
 import { GOOGLE_API_KEY } from '../Utils/Constanst';
 
 // import vehicle types
-import vehicleTypes from '../Utils/VehicleTypes';
+import vehicleTypes from '../Utils/vehicleTypes';
 
 const formatPrice = (amount) => `$ ${amount.toLocaleString('es-CO')}`;
 
@@ -91,10 +91,12 @@ const RideScreen = ({ navigation }) => {
         setRouteCoords(points);
 
         if (mapRef.current) {
-          mapRef.current.fitToCoordinates(points, {
-            edgePadding: { top: 80, right: 40, bottom: 300, left: 40 },
-            animated: true,
-          });
+          setTimeout(() => {
+            mapRef.current.fitToCoordinates(points, {
+              edgePadding: { top: 60, right: 60, bottom: 60, left: 60 },
+              animated: true,
+            });
+          }, 300);
         }
       } else {
         Alert.alert(
