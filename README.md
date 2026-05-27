@@ -51,7 +51,7 @@ Follow these steps in your terminal to clone and run the project locally:
 
 ### 1. Clone the repository and navigate to the folder
 ```bash
-git clone https://github.com/adlerOmonte1/UberClone-App.git
+git clone https://github.com/TREYCYBRY/UberClone-App.git
 cd UberClone-App
 ```
 
