@@ -11,8 +11,8 @@ import RideScreen from '../Screens/RideScreen';
 import HistoryScreen from '../Screens/HistoryScreen';
 import PaymentScreen from '../Screens/PaymentScreen';
 import TrackingScreen from '../Screens/TrackingScreen';
-const Tab = createBottomTabNavigator();
 
+const Tab = createBottomTabNavigator();
 
 const getTabIcon = (routeName, focused) => {
   const icons = {
@@ -35,20 +35,28 @@ const MainNavigator = () => {
                     {getTabIcon(route.name, focused)}
                 </Text>
                 ),
-                // styles tab bar
                 tabBarActiveTintColor:   COLORS.primary,
                 tabBarInactiveTintColor: COLORS.textSecondary,
+                
+                tabBarActiveBackgroundColor: '#F0F0F0', 
+                
+                tabBarItemStyle: {
+                  borderRadius: 10,
+                  marginHorizontal: 5,
+                  marginVertical: 4,
+                  paddingBottom: 4, 
+                },
                 tabBarStyle: {
-                backgroundColor: COLORS.surface,
-                borderTopWidth: 1,
-                borderTopColor: COLORS.border,
-                height: 60,
-                paddingBottom: 8,
-                paddingTop: 4,
+                  backgroundColor: COLORS.surface,
+                  borderTopWidth: 1,
+                  borderTopColor: COLORS.border,
+                  height: 65,
+                  paddingBottom: 8,
+                  paddingTop: 4,
                 },
                 tabBarLabelStyle: {
-                fontSize: 11,
-                fontWeight: '600',
+                  fontSize: 11,
+                  fontWeight: '600',
                 },
                 headerShown: false,
             })}
@@ -74,7 +82,7 @@ const MainNavigator = () => {
                 options={{
                 tabBarLabel: 'Historial',
                 //Badge number of rides 
-                tabBarBadge: rides.length > 0 ? rides.length : undefined,
+                tabBarBadge: rides && rides.length > 0 ? rides.length : undefined, 
                 tabBarBadgeStyle: {
                     backgroundColor: COLORS.secondary,
                     color: COLORS.surface,
@@ -87,9 +95,8 @@ const MainNavigator = () => {
                 component={ProfileScreen} 
                 options={{tabBarLabel: 'Perfil'}}
             />
-            
-
         </Tab.Navigator>
     );
 };
+
 export default MainNavigator;
